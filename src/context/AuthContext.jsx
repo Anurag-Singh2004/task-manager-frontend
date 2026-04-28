@@ -43,13 +43,14 @@ export function AuthProvider({children}){
   async function login(email, password) {
     setIsLoading(true);
     try {
-      const res = api.post("/auth/login", {
+      const res = await api.post("/auth/login", {
         email,
         password,
       });
       setAccessToken(res.data.accessToken);
       localStorage.setItem("refreshToken", res.data.refreshToken);
       setCurrentUser({ email });
+      return { success: true };
     } catch (err) {
       return {
         success: false,
@@ -65,7 +66,7 @@ export function AuthProvider({children}){
     try {
       const refreshToken = localStorage.getItem("refreshToken");
       // Tell server to invalidate the refresh token
-      api.post("/auth/logout", { refreshToken });
+      await api.post("/auth/logout", { refreshToken });
     } catch (err) {
       // Even if server call fails — still log out locally
       console.error("Logout error:", err);
