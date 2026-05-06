@@ -1,5 +1,6 @@
 import  {createContext, useContext, useState} from 'react';
 import api from '../utils/api';
+import { tokenStore } from '../utils/tokenStore';
 
 //Create the context
 const AuthContext = createContext(null);
@@ -21,6 +22,7 @@ export function AuthProvider({children}){
       });
       //save token
       setAccessToken(res.data.accessToken);
+      tokenStore.setToken(res.data.accessToken);
       localStorage.setItem("refreshToken", res.data.refreshToken);
 
       // Fetch current user info
@@ -48,6 +50,7 @@ export function AuthProvider({children}){
         password,
       });
       setAccessToken(res.data.accessToken);
+      tokenStore.setToken(res.data.accessToken);
       localStorage.setItem("refreshToken", res.data.refreshToken);
       setCurrentUser({ email });
       return { success: true };
@@ -72,6 +75,7 @@ export function AuthProvider({children}){
       console.error("Logout error:", err);
     } finally {
       setAccessToken(null);
+      tokenStore.clearToken();
       setCurrentUser(null);
       localStorage.removeItem("refreshToken");
     }
