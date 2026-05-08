@@ -1,17 +1,25 @@
-import { useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useAuth } from "../context/AuthContext";
 import api from "../utils/api";
+import ProjectCard from "../components/Projects/ProjectCard"
 
 function Dashboard() {
   const { currentUser, logout } = useAuth();
 
+  const [projects,setProjects] = useState([]);
+  const [isLoading,setIsLoading] = useState(true);
+  const [error,setError] = useState(null);
+
   useEffect(()=>{
     async function fetchProjects(){
       try{
+        setIsLoading(true);
         const res = await api.get('/projects');
-        console.log("Projects:", res.data);
+        setProjects(res.data.data);
       }catch(err){
-        console.log("Error:", err);
+        setError(err.message);
+      }finally{
+        setIsLoading(false);
       }
     }
     fetchProjects();
@@ -19,37 +27,43 @@ function Dashboard() {
 
   async function handleLogout(){
     await logout();
-    // isAuthenticated becomes false
-    // ProtectedRoute kicks in
-    // Redirects to /login automatically
   }
+
   return (
     <div style={styles.page}>
 
-      {/* Navbar */}
       <div style={styles.navbar}>
         <h1 style={styles.logo}>⚛️ Task Manager</h1>
         <div style={styles.navRight}>
-          <span style={styles.email}>
-            👤 {currentUser?.email}
-          </span>
-          <button
-            onClick={handleLogout}
-            style={styles.logoutBtn}
-          >
+          <span style={styles.email}>👤 {currentUser?.email}</span>
+          <button onClick={handleLogout} style={styles.logoutBtn}>
             Logout
           </button>
         </div>
       </div>
 
-      {/* Content */}
       <div style={styles.content}>
-        <h2 style={styles.title}>My Projects</h2>
-        <p style={styles.subtitle}>
-          Projects will appear here soon! 🚀
-        </p>
-      </div>
+        <div style={styles.header}>
+          <h2 style={styles.title}>My Projects</h2>
+        </div>
 
+        {isLoading && <p style={styles.loading}>⏳ Loading projects...</p>}
+
+        {error && <p style={styles.errorMsg}>❌ {error}</p>}
+
+        {!isLoading && !error && projects.length === 0 && (
+          <p style={styles.empty}>No projects yet! Create your first one. 🚀</p>
+        )}
+
+        <div style={styles.grid}>
+          {projects.map((project) => (
+            <ProjectCard
+              key={project._id}
+              project={project}
+            />
+          ))}
+        </div>
+      </div>
     </div>
   );
 }
@@ -95,14 +109,42 @@ const styles = {
   },
   content: {
     padding: 32,
+    maxWidth: 1200,
+    margin: "0 auto",
+  },
+  header: {
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 32,
   },
   title: {
     fontSize: 24,
     fontWeight: 800,
-    marginBottom: 8,
+    margin: 0,
   },
-  subtitle: {
+  grid: {
+    display: "grid",
+    gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))",
+    gap: 20,
+  },
+  loading: {
     color: "#64748b",
+    fontSize: 16,
+    textAlign: "center",
+    padding: 40,
+  },
+  errorMsg: {
+    color: "#fca5a5",
+    fontSize: 16,
+    textAlign: "center",
+    padding: 40,
+  },
+  empty: {
+    color: "#64748b",
+    fontSize: 16,
+    textAlign: "center",
+    padding: 40,
   },
 };
 

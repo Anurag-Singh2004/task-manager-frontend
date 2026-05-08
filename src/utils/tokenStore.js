@@ -11,4 +11,4 @@ export const tokenStore = {
     accessToken = null;
   }
 }
-//It is a bridge between AuthContext and api.js so that api.js can attach accesstoken from the context to its interceptors
+//It is a bridge between AuthContext and api.js so that api.js can attach accesstoken for sending requests from the context to its interceptors

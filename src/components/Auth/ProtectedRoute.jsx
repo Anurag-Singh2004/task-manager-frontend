@@ -2,8 +2,25 @@ import { Navigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 
 function ProtectedRoute({children}){
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, isLoading } = useAuth();
 
+  if (isLoading) {
+    return (
+      <div
+        style={{
+          minHeight: "100vh",
+          background: "#0f172a",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          color: "#64748b",
+          fontSize: 18,
+        }}
+      >
+        ⏳ Restoring session...
+      </div>
+    );
+  }
   // Not logged in? Send to login page
   // Replace=true means /login replaces current
   // history entry (back button won't go back
