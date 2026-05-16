@@ -1,41 +1,49 @@
 import { useState, useEffect } from "react";
 import { useAuth } from "../context/AuthContext";
 import api from "../utils/api";
-import ProjectCard from "../components/Projects/ProjectCard"
+import ProjectCard from "../components/Projects/ProjectCard";
+import CreateProjectModal from "../components/Projects/CreateProjectModal";
 
 function Dashboard() {
   const { currentUser, logout } = useAuth();
 
-  const [projects,setProjects] = useState([]);
-  const [isLoading,setIsLoading] = useState(true);
-  const [error,setError] = useState(null);
+  const [projects, setProjects] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [isOpen, setIsOpen] = useState(false);
 
-  useEffect(()=>{
-    async function fetchProjects(){
-      try{
+  useEffect(() => {
+    async function fetchProjects() {
+      try {
         setIsLoading(true);
-        const res = await api.get('/projects');
+        const res = await api.get("/projects");
         setProjects(res.data.data);
-      }catch(err){
+      } catch (err) {
         setError(err.message);
-      }finally{
+      } finally {
         setIsLoading(false);
       }
     }
     fetchProjects();
-  },[]);
+  }, []);
 
-  async function handleLogout(){
+  async function handleLogout() {
     await logout();
+  }
+
+  function handleProjectCreated(newProject) {
+    setProjects((prev) => [...prev, newProject]);
   }
 
   return (
     <div style={styles.page}>
-
       <div style={styles.navbar}>
         <h1 style={styles.logo}>⚛️ Task Manager</h1>
         <div style={styles.navRight}>
           <span style={styles.email}>👤 {currentUser?.email}</span>
+          <button onClick={() => setIsOpen(true)} style={styles.newProjectBtn}>
+            + New Project
+          </button>
           <button onClick={handleLogout} style={styles.logoutBtn}>
             Logout
           </button>
@@ -57,13 +65,15 @@ function Dashboard() {
 
         <div style={styles.grid}>
           {projects.map((project) => (
-            <ProjectCard
-              key={project._id}
-              project={project}
-            />
+            <ProjectCard key={project._id} project={project} />
           ))}
         </div>
       </div>
+      <CreateProjectModal
+        isOpen={isOpen}
+        onClose={() => setIsOpen(false)}
+        onProjectCreated={handleProjectCreated}
+      />
     </div>
   );
 }
@@ -145,6 +155,16 @@ const styles = {
     fontSize: 16,
     textAlign: "center",
     padding: 40,
+  },
+  newProjectBtn: {
+    background: "#2563eb",
+    color: "#fff",
+    border: "none",
+    borderRadius: 8,
+    padding: "8px 16px",
+    cursor: "pointer",
+    fontSize: 14,
+    fontWeight: 600,
   },
 };
 
