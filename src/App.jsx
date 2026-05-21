@@ -5,6 +5,7 @@ import PublicRoute from "./components/Auth/PublicRoute";
 import Login from './pages/Login';
 import Register from "./pages/Register";
 import Dashboard from "./pages/Dashboard";
+import ProjectView from "./pages/ProjectView";
 
 function App() {
   return (
@@ -40,6 +41,14 @@ function App() {
             element={
               <ProtectedRoute>
                 <Dashboard />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/projects/:id"
+            element={
+              <ProtectedRoute>
+                <ProjectView />
               </ProtectedRoute>
             }
           />
