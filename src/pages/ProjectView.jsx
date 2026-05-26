@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import api from "../utils/api";
 import CreateTaskModal from "../components/Tasks/CreateTaskModal";
+import TaskCard from "../components/Tasks/TaskCard";
 
 function ProjectView() {
   const { id } = useParams();
@@ -56,7 +57,7 @@ function ProjectView() {
         <div>
           <h3>TO DO ({todoTasks.length})</h3>
           {todoTasks.map((task) => (
-            <p key={task._id}>{task.title}</p>
+            <TaskCard key={task._id} task={task} />
           ))}
         </div>
 
@@ -64,7 +65,7 @@ function ProjectView() {
         <div>
           <h3>IN PROGRESS ({inProgressTasks.length})</h3>
           {inProgressTasks.map((task) => (
-            <p key={task._id}>{task.title}</p>
+            <TaskCard key={task._id} task={task} />
           ))}
         </div>
 
@@ -72,7 +73,7 @@ function ProjectView() {
         <div>
           <h3>DONE ({doneTasks.length})</h3>
           {doneTasks.map((task) => (
-            <p key={task._id}>{task.title}</p>
+            <TaskCard key={task._id} task={task} />
           ))}
         </div>
       </div>
