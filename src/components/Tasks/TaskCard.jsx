@@ -1,13 +1,30 @@
-function TaskCard({ task }) {
+import {useState} from "react";
+import api from "../../utils/api";
+
+function TaskCard({ task, projectId, onStatusChange }) {
+
+  const [isUpdating, setIsUpdating] = useState(false);
+
   function getPriorityColor(priority) {
     if (priority === "high") return "#dc2626";
     if (priority === "medium") return "#f59e0b";
     return "#22c55e";
   }
 
+  async function handleStatusChange(newStatus) {
+    setIsUpdating(true);
+    try{
+        await api.patch(`/projects/${projectId}/tasks/${task._id}/status`, {status: newStatus});
+        onStatusChange(task._id, newStatus);
+    }catch(err){
+        console.error('Status update failed', err);
+  }finally{
+        setIsUpdating(false);
+    }
+  }
+
   return (
     <div style={styles.card}>
-        
       {/*Priority Badge*/}
       <span
         style={{
@@ -22,7 +39,7 @@ function TaskCard({ task }) {
       <p style={styles.title}>{task.title}</p>
 
       {/* Description */}
-      {task.description && (<p style={styles.description}>{task.description}</p>)}
+      {task.description && <p style={styles.description}>{task.description}</p>}
 
       {/* Due Date */}
       {task.dueDate && (
@@ -30,6 +47,37 @@ function TaskCard({ task }) {
           📅 {new Date(task.dueDate).toLocaleDateString()}
         </p>
       )}
+
+      {/* Status Buttons */}
+      <div style={styles.statusButtons}>
+        {task.status !== "todo" && (
+          <button
+            onClick={() => handleStatusChange("todo")}
+            disabled={isUpdating}
+            style={styles.statusBtn}
+          >
+            Todo
+          </button>
+        )}
+        {task.status !== "in-progress" && (
+          <button
+            onClick={() => handleStatusChange("in-progress")}
+            disabled={isUpdating}
+            style={styles.statusBtn}
+          >
+            In Progress
+          </button>
+        )}
+        {task.status !== "done" && (
+          <button
+            onClick={() => handleStatusChange("done")}
+            disabled={isUpdating}
+            style={{ ...styles.statusBtn, background: "#16a34a" }}
+          >
+            Done ✓
+          </button>
+        )}
+      </div>
     </div>
   );
 }
@@ -69,6 +117,22 @@ const styles = {
     color: "#94a3b8",
     fontSize: 12,
     margin: 0,
+  },
+  statusButtons: {
+    display: "flex",
+    gap: 6,
+    marginTop: 8,
+    flexWrap: "wrap",
+  },
+  statusBtn: {
+    background: "#334155",
+    border: "none",
+    color: "#e2e8f0",
+    borderRadius: 6,
+    padding: "4px 10px",
+    fontSize: 12,
+    cursor: "pointer",
+    fontWeight: 600,
   },
 };
 

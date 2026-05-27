@@ -37,6 +37,10 @@ function ProjectView() {
     setTasks((prev) => [...prev, newTask]);
   }
 
+  function handleStatusChange(taskId, newStatus) {
+    setTasks(prev=> prev.map(task=> task._id === taskId ? {...task, status: newStatus} : task));
+  }
+
   if (isLoading)
     return <p style={{ color: "white", padding: 32 }}>⏳ Loading...</p>;
   if (error) return <p style={{ color: "#fca5a5", padding: 32 }}>❌ {error}</p>;
@@ -76,7 +80,12 @@ function ProjectView() {
               <p style={styles.empty}>No tasks here!</p>
             )}
             {todoTasks.map((task) => (
-              <TaskCard key={task._id} task={task} />
+              <TaskCard
+                key={task._id}
+                task={task}
+                projectId={id}
+                onStatusChange={handleStatusChange}
+              />
             ))}
           </div>
         </div>
@@ -92,7 +101,12 @@ function ProjectView() {
               <p style={styles.empty}>No tasks here!</p>
             )}
             {inProgressTasks.map((task) => (
-              <TaskCard key={task._id} task={task} />
+              <TaskCard
+                key={task._id}
+                task={task}
+                projectId={id}
+                onStatusChange={handleStatusChange}
+              />
             ))}
           </div>
         </div>
@@ -108,7 +122,12 @@ function ProjectView() {
               <p style={styles.empty}>No tasks here!</p>
             )}
             {doneTasks.map((task) => (
-              <TaskCard key={task._id} task={task} />
+              <TaskCard
+                key={task._id}
+                task={task}
+                projectId={id}
+                onStatusChange={handleStatusChange}
+              />
             ))}
           </div>
         </div>
