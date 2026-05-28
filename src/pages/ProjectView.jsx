@@ -15,6 +15,9 @@ function ProjectView() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
+  const [search, setSearch] = useState('');
+  const [priorityFilter, setPriorityFilter] = useState('all');
+  const [statusFilter, setStatusFilter] = useState('all');
 
   useEffect(() => {
     async function fetchData() {
@@ -51,9 +54,22 @@ function ProjectView() {
     return <p style={{ color: "white", padding: 32 }}>⏳ Loading...</p>;
   if (error) return <p style={{ color: "#fca5a5", padding: 32 }}>❌ {error}</p>;
 
-  const todoTasks = tasks.filter((task) => task.status === "todo");
-  const inProgressTasks = tasks.filter((task) => task.status === "in-progress");
-  const doneTasks = tasks.filter((task) => task.status === "done");
+
+  const filteredTasks = tasks.filter((task) => {
+    const matchesSearch = task.title
+      .toLowerCase()
+      .includes(search.toLowerCase());
+    const matchesPriority =
+      priorityFilter === "all" || task.priority === priorityFilter;
+    const matchesStatus =
+      statusFilter == "all" || task.status === statusFilter;
+    return matchesSearch && matchesPriority && matchesStatus;
+  });
+
+  const todoTasks = filteredTasks.filter((task) => task.status === "todo");
+  const inProgressTasks = filteredTasks.filter((task) => task.status === "in-progress");
+  const doneTasks = filteredTasks.filter((task) => task.status === "done");
+
 
   return (
     <div style={styles.page}>
@@ -71,6 +87,41 @@ function ProjectView() {
         >
           + Add Task
         </button>
+      </div>
+
+      {/* Filters */}
+      <div style={styles.filters}>
+        {/* Search */}
+        <input
+          placeholder="🔍 Search tasks..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          style={styles.searchInput}
+        />
+
+        {/* Priority Filter */}
+        <select
+          value={priorityFilter}
+          onChange={(e) => setPriorityFilter(e.target.value)}
+          style={styles.select}
+        >
+          <option value="all">All Priorities</option>
+          <option value="low">🟢 Low</option>
+          <option value="medium">🟡 Medium</option>
+          <option value="high">🔴 High</option>
+        </select>
+
+        {/* Status Filter */}
+        <select
+          value={statusFilter}
+          onChange={(e) => setStatusFilter(e.target.value)}
+          style={styles.select}
+        >
+          <option value="all">All Statuses</option>
+          <option value="todo">📋 Todo</option>
+          <option value="in-progress">⚙️ In Progress</option>
+          <option value="done">✅ Done</option>
+        </select>
       </div>
 
       {/* Kanban Board */}
@@ -246,6 +297,32 @@ const styles = {
     fontSize: 14,
     textAlign: "center",
     padding: "20px 0",
+  },
+  filters: {
+    display: "flex",
+    gap: 12,
+    padding: "16px 32px",
+    background: "#1e293b",
+    borderBottom: "1px solid #334155",
+  },
+  searchInput: {
+    background: "#0f172a",
+    border: "1px solid #334155",
+    borderRadius: 8,
+    padding: "8px 14px",
+    color: "#e2e8f0",
+    fontSize: 14,
+    outline: "none",
+    flex: 1,
+  },
+  select: {
+    background: "#0f172a",
+    border: "1px solid #334155",
+    borderRadius: 8,
+    padding: "8px 14px",
+    color: "#e2e8f0",
+    fontSize: 14,
+    cursor: "pointer",
   },
 };
 
