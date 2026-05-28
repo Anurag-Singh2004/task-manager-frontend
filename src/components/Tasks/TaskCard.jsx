@@ -1,7 +1,7 @@
 import {useState} from "react";
 import api from "../../utils/api";
 
-function TaskCard({ task, projectId, onStatusChange }) {
+function TaskCard({ task, projectId, onStatusChange, canDelete, onTaskDeleted }) {
 
   const [isUpdating, setIsUpdating] = useState(false);
 
@@ -20,6 +20,19 @@ function TaskCard({ task, projectId, onStatusChange }) {
         console.error('Status update failed', err);
   }finally{
         setIsUpdating(false);
+    }
+  }
+
+  async function handleDelete(){
+    if(!window.confirm('Are you sure you want to delete this task')) return;
+    setIsUpdating(true);
+    try{
+      await api.delete(`/projects/${projectId}/tasks/${task._id}`)
+      onTaskDeleted(task._id)
+    }catch(err){
+      console.error('Delete failed :',err)
+    }finally{
+      setIsUpdating(false)
     }
   }
 
@@ -75,6 +88,21 @@ function TaskCard({ task, projectId, onStatusChange }) {
             style={{ ...styles.statusBtn, background: "#16a34a" }}
           >
             Done ✓
+          </button>
+        )}
+        {canDelete && (
+          <button
+            onClick={handleDelete}
+            disabled={isUpdating}
+            style={{
+              ...styles.statusBtn,
+              background: "transparent",
+              border: "1px solid #dc2626",
+              color: "#dc2626",
+              marginTop: 4,
+            }}
+          >
+            🗑️ Delete
           </button>
         )}
       </div>

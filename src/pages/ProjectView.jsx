@@ -3,10 +3,12 @@ import { useParams, useNavigate } from "react-router-dom";
 import api from "../utils/api";
 import CreateTaskModal from "../components/Tasks/CreateTaskModal";
 import TaskCard from "../components/Tasks/TaskCard";
+import {useAuth} from "../context/AuthContext"
 
 function ProjectView() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const {currentUser} = useAuth();
 
   const [tasks, setTasks] = useState([]);
   const [project, setProject] = useState(null);
@@ -39,6 +41,10 @@ function ProjectView() {
 
   function handleStatusChange(taskId, newStatus) {
     setTasks(prev=> prev.map(task=> task._id === taskId ? {...task, status: newStatus} : task));
+  }
+
+  function handleTaskDeleted(taskId) {
+    setTasks((prev) => prev.filter((task) => task._id !== taskId));
   }
 
   if (isLoading)
@@ -85,6 +91,8 @@ function ProjectView() {
                 task={task}
                 projectId={id}
                 onStatusChange={handleStatusChange}
+                canDelete={project.owner?._id === currentUser._id}
+                onTaskDeleted={handleTaskDeleted}
               />
             ))}
           </div>
@@ -106,6 +114,8 @@ function ProjectView() {
                 task={task}
                 projectId={id}
                 onStatusChange={handleStatusChange}
+                canDelete={project.owner?._id === currentUser._id}
+                onTaskDeleted={handleTaskDeleted}
               />
             ))}
           </div>
@@ -127,6 +137,8 @@ function ProjectView() {
                 task={task}
                 projectId={id}
                 onStatusChange={handleStatusChange}
+                canDelete={project.owner?._id === currentUser._id}
+                onTaskDeleted={handleTaskDeleted}
               />
             ))}
           </div>
