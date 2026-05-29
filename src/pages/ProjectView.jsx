@@ -3,7 +3,8 @@ import { useParams, useNavigate } from "react-router-dom";
 import api from "../utils/api";
 import CreateTaskModal from "../components/Tasks/CreateTaskModal";
 import TaskCard from "../components/Tasks/TaskCard";
-import {useAuth} from "../context/AuthContext"
+import {useAuth} from "../context/AuthContext";
+import AddMemberModal from "../components/Projects/AddMemberModal";
 
 function ProjectView() {
   const { id } = useParams();
@@ -18,6 +19,7 @@ function ProjectView() {
   const [search, setSearch] = useState('');
   const [priorityFilter, setPriorityFilter] = useState('all');
   const [statusFilter, setStatusFilter] = useState('all');
+  const [isMemberModalOpen, setIsMemberModalOpen] = useState(false);
 
   useEffect(() => {
     async function fetchData() {
@@ -48,6 +50,10 @@ function ProjectView() {
 
   function handleTaskDeleted(taskId) {
     setTasks((prev) => prev.filter((task) => task._id !== taskId));
+  }
+
+  function handleMemberAdded(updatedProject) {
+    setProject(updatedProject);
   }
 
   if (isLoading)
@@ -81,12 +87,22 @@ function ProjectView() {
           </button>
           <h1 style={styles.projectTitle}>{project?.title}</h1>
         </div>
-        <button
-          onClick={() => setIsTaskModalOpen(true)}
-          style={styles.addTaskBtn}
-        >
-          + Add Task
-        </button>
+        <div style={styles.navRight}>
+          {project.owner?._id === currentUser._id && (
+            <button
+              onClick={() => setIsMemberModalOpen(true)}
+              style={styles.addMemberBtn}
+            >
+              + Add Member
+            </button>
+          )}
+          <button
+            onClick={() => setIsTaskModalOpen(true)}
+            style={styles.addTaskBtn}
+          >
+            + Add Task
+          </button>
+        </div>
       </div>
 
       {/* Filters */}
@@ -196,6 +212,13 @@ function ProjectView() {
         </div>
       </div>
 
+      <AddMemberModal
+        isOpen={isMemberModalOpen}
+        onClose={() => setIsMemberModalOpen(false)}
+        onMemberAdded={handleMemberAdded}
+        projectId={id}
+      />
+
       <CreateTaskModal
         isOpen={isTaskModalOpen}
         onClose={() => setIsTaskModalOpen(false)}
@@ -207,6 +230,16 @@ function ProjectView() {
 }
 
 const styles = {
+  addMemberBtn: {
+  background: 'transparent',
+  border: '1px solid #334155',
+  color: '#94a3b8',
+  borderRadius: 8,
+  padding: '8px 16px',
+  cursor: 'pointer',
+  fontSize: 14,
+  fontWeight: 600,
+  },
   page: {
     minHeight: "100vh",
     background: "#0f172a",
@@ -224,6 +257,11 @@ const styles = {
     display: "flex",
     alignItems: "center",
     gap: 16,
+  },
+  navRight: {
+    display: "flex",
+    gap: 12,
+    alignItems: "center",
   },
   backBtn: {
     background: "transparent",
