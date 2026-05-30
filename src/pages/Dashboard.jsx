@@ -3,6 +3,7 @@ import { useAuth } from "../context/AuthContext";
 import api from "../utils/api";
 import ProjectCard from "../components/Projects/ProjectCard";
 import CreateProjectModal from "../components/Projects/CreateProjectModal";
+import Spinner from "../components/UI/Spinner";
 
 function Dashboard() {
   const { currentUser, logout } = useAuth();
@@ -55,7 +56,7 @@ function Dashboard() {
           <h2 style={styles.title}>My Projects</h2>
         </div>
 
-        {isLoading && <p style={styles.loading}>⏳ Loading projects...</p>}
+        {isLoading && <Spinner message="Loading projects..." />}
 
         {error && <p style={styles.errorMsg}>❌ {error}</p>}
 

@@ -6,6 +6,7 @@ import TaskCard from "../components/Tasks/TaskCard";
 import {useAuth} from "../context/AuthContext";
 import AddMemberModal from "../components/Projects/AddMemberModal";
 import CategoryModal from "../components/Projects/CategoryModal";
+import Spinner from "../components/UI/Spinner";
 
 function ProjectView() {
   const { id } = useParams();
@@ -67,7 +68,7 @@ function ProjectView() {
   }
 
   if (isLoading)
-    return <p style={{ color: "white", padding: 32 }}>⏳ Loading...</p>;
+    return <Spinner message="Loading project..." />;
   if (error) return <p style={{ color: "#fca5a5", padding: 32 }}>❌ {error}</p>;
 
 
