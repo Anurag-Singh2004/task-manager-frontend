@@ -54,6 +54,19 @@ function TaskCard({ task, projectId, onStatusChange, canDelete, onTaskDeleted })
       {/* Description */}
       {task.description && <p style={styles.description}>{task.description}</p>}
 
+      {/* Category Badge */}
+      {task.category && (
+        <span
+          style={{
+            ...styles.badge,
+            background: task.category.color,
+            fontSize: 11,
+          }}
+        >
+          {task.category.name}
+        </span>
+      )}
+
       {/* Due Date */}
       {task.dueDate && (
         <p style={styles.dueDate}>
