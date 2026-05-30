@@ -8,7 +8,8 @@ function CreateTaskModal({ isOpen, onClose, onTaskCreated, projectId, categories
     description: '',
     priority: 'medium', 
     status: 'todo', 
-    category: ''
+    category: '',
+    dueDate: ''
   })
   const [error, setError] = useState('')
   const [isLoading, setIsLoading] = useState(false)
@@ -131,6 +132,19 @@ return (
               </option>
             ))}
           </select>
+        </div>
+
+        {/* Due Date */}
+        <div style={styles.field}>
+          <label style={styles.label}>Due Date</label>
+          <input
+            type="date"
+            name="dueDate"
+            value={formData.dueDate}
+            onChange={handleChange}
+            style={styles.input}
+            disabled={isLoading}
+          />
         </div>
 
         {/* Buttons */}

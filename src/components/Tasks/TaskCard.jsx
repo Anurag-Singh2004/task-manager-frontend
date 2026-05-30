@@ -69,8 +69,14 @@ function TaskCard({ task, projectId, onStatusChange, canDelete, onTaskDeleted })
 
       {/* Due Date */}
       {task.dueDate && (
-        <p style={styles.dueDate}>
-          📅 {new Date(task.dueDate).toLocaleDateString()}
+        <p
+          style={{
+            ...styles.dueDate,
+            color: new Date(task.dueDate) < new Date() ? "#dc2626" : "#94a3b8",
+          }}
+        >
+          {new Date(task.dueDate) < new Date() ? "⚠️" : "📅"}{" "}
+          {new Date(task.dueDate).toLocaleDateString()}
         </p>
       )}
 
