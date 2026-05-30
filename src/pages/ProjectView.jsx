@@ -5,6 +5,7 @@ import CreateTaskModal from "../components/Tasks/CreateTaskModal";
 import TaskCard from "../components/Tasks/TaskCard";
 import {useAuth} from "../context/AuthContext";
 import AddMemberModal from "../components/Projects/AddMemberModal";
+import CategoryModal from "../components/Projects/CategoryModal";
 
 function ProjectView() {
   const { id } = useParams();
@@ -20,17 +21,21 @@ function ProjectView() {
   const [priorityFilter, setPriorityFilter] = useState('all');
   const [statusFilter, setStatusFilter] = useState('all');
   const [isMemberModalOpen, setIsMemberModalOpen] = useState(false);
+  const [categories, setCategories] = useState([]);
+  const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
 
   useEffect(() => {
     async function fetchData() {
       try {
         setIsLoading(true);
-        const [projectRes, tasksRes] = await Promise.all([
+        const [projectRes, tasksRes, categoriesRes] = await Promise.all([
           api.get(`/projects/${id}`),
           api.get(`/projects/${id}/tasks`),
+          api.get(`/projects/${id}/categories`),
         ]);
         setProject(projectRes.data.data);
         setTasks(tasksRes.data.data);
+        setCategories(categoriesRes.data.data);
       } catch (err) {
         setError(err.message);
       } finally {
@@ -54,6 +59,10 @@ function ProjectView() {
 
   function handleMemberAdded(updatedProject) {
     setProject(updatedProject);
+  }
+
+  function handleCategoryAdded(newCategory){
+    setCategories(prev=>[...prev, newCategory])
   }
 
   if (isLoading)
@@ -101,6 +110,12 @@ function ProjectView() {
             style={styles.addTaskBtn}
           >
             + Add Task
+          </button>
+          <button
+            onClick={() => setIsCategoryModalOpen(true)}
+            style={styles.categoryBtn}
+          >
+            Categories
           </button>
         </div>
       </div>
@@ -225,20 +240,29 @@ function ProjectView() {
         onTaskCreated={handleTaskCreated}
         projectId={id}
       />
+
+      <CategoryModal
+        isOpen={isCategoryModalOpen}
+        onClose={() => setIsCategoryModalOpen(false)}
+        categories={categories}
+        projectId={id}
+        onCategoryAdded={handleCategoryAdded}
+        canManage={project.owner?._id === currentUser._id}
+      />
     </div>
   );
 }
 
 const styles = {
   addMemberBtn: {
-  background: 'transparent',
-  border: '1px solid #334155',
-  color: '#94a3b8',
-  borderRadius: 8,
-  padding: '8px 16px',
-  cursor: 'pointer',
-  fontSize: 14,
-  fontWeight: 600,
+    background: "transparent",
+    border: "1px solid #334155",
+    color: "#94a3b8",
+    borderRadius: 8,
+    padding: "8px 16px",
+    cursor: "pointer",
+    fontSize: 14,
+    fontWeight: 600,
   },
   page: {
     minHeight: "100vh",
@@ -361,6 +385,16 @@ const styles = {
     color: "#e2e8f0",
     fontSize: 14,
     cursor: "pointer",
+  },
+  categoryBtn: {
+    background: "transparent",
+    border: "1px solid #334155",
+    color: "#94a3b8",
+    borderRadius: 8,
+    padding: "8px 16px",
+    cursor: "pointer",
+    fontSize: 14,
+    fontWeight: 600,
   },
 };
 
