@@ -28,7 +28,14 @@ function CreateTaskModal({ isOpen, onClose, onTaskCreated, projectId, categories
     }
     setIsLoading(true)
     try {
-      const res = await api.post(`/projects/${projectId}/tasks`, formData)
+      const res = await api.post(`/projects/${projectId}/tasks`, {
+        title: formData.title.trim(),
+        description: formData.description.trim(),
+        priority: formData.priority,
+        status: formData.status,
+        category: formData.category || null,
+        dueDate: formData.dueDate || null,
+      });
       onTaskCreated(res.data.data)
       setFormData({ title: '', description: '', priority: 'medium', status: 'todo' })
       onClose()

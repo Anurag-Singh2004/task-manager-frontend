@@ -14,7 +14,7 @@ function AddMemberModal({ isOpen, onClose, onMemberAdded, projectId }){
         }
         setIsLoading(true);
         try{
-            const res = await api.post(`/projects/${projectId}/members`, { email })
+            const res = await api.post(`/projects/${projectId}/members`, { email: email.trim().toLowerCase() })
             onMemberAdded(res.data.data);
             setEmail('');
             onClose();

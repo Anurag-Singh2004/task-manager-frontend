@@ -24,8 +24,8 @@ function CreateProjectModal({isOpen,onClose,onProjectCreated}){
     setIsLoading(true);
     try{
       const res = await api.post('/projects',{
-        title: formData.title,
-        description: formData.description,
+        title: formData.title.trim(),
+        description: formData.description.trim(),
       })
 
       onProjectCreated(res.data.data);
