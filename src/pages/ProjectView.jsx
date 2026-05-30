@@ -115,7 +115,7 @@ function ProjectView() {
             onClick={() => setIsCategoryModalOpen(true)}
             style={styles.categoryBtn}
           >
-            Categories
+          +  Categories
           </button>
         </div>
       </div>
@@ -239,6 +239,7 @@ function ProjectView() {
         onClose={() => setIsTaskModalOpen(false)}
         onTaskCreated={handleTaskCreated}
         projectId={id}
+        categories={categories}
       />
 
       <CategoryModal

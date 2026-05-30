@@ -1,13 +1,14 @@
 import { useState } from 'react'
 import api from '../../utils/api'
 
-function CreateTaskModal({ isOpen, onClose, onTaskCreated, projectId }) { 
+function CreateTaskModal({ isOpen, onClose, onTaskCreated, projectId, categories}) { 
 
   const [formData, setFormData] = useState({
     title: '',
     description: '',
     priority: 'medium', 
     status: 'todo', 
+    category: ''
   })
   const [error, setError] = useState('')
   const [isLoading, setIsLoading] = useState(false)
@@ -40,106 +41,124 @@ function CreateTaskModal({ isOpen, onClose, onTaskCreated, projectId }) {
   if(!isOpen) return null;
 
 return (
-    <div style={styles.overlay}>
-      <div style={styles.modal}>
-        
-        {/* Header */}
-        <div style={styles.header}>
-          <h2 style={styles.title}>Create New Task</h2>
-          <button onClick={onClose} style={styles.closeBtn}>✕</button>
+  <div style={styles.overlay}>
+    <div style={styles.modal}>
+      {/* Header */}
+      <div style={styles.header}>
+        <h2 style={styles.title}>Create New Task</h2>
+        <button onClick={onClose} style={styles.closeBtn}>
+          ✕
+        </button>
+      </div>
+
+      {/* Error */}
+      {error && <div style={styles.error}>❌ {error}</div>}
+
+      {/* Form */}
+      <form onSubmit={handleSubmit} style={styles.form}>
+        {/* Title */}
+        <div style={styles.field}>
+          <label style={styles.label}>Task Title *</label>
+          <input
+            name="title"
+            value={formData.title}
+            onChange={handleChange}
+            placeholder="My Awesome Task"
+            style={styles.input}
+            disabled={isLoading}
+          />
         </div>
 
-        {/* Error */}
-        {error && <div style={styles.error}>❌ {error}</div>}
+        {/* Description */}
+        <div style={styles.field}>
+          <label style={styles.label}>Description</label>
+          <textarea
+            name="description"
+            value={formData.description}
+            onChange={handleChange}
+            placeholder="What is this task about?"
+            style={{ ...styles.input, height: 80, resize: "none" }}
+            disabled={isLoading}
+          />
+        </div>
 
-        {/* Form */}
-        <form onSubmit={handleSubmit} style={styles.form}>
-          
-          {/* Title */}
-          <div style={styles.field}>
-            <label style={styles.label}>Task Title *</label>
-            <input
-              name="title"
-              value={formData.title}
-              onChange={handleChange}
-              placeholder="My Awesome Task"
-              style={styles.input}
-              disabled={isLoading}
-            />
-          </div>
+        {/* Priority */}
+        <div style={styles.field}>
+          <label style={styles.label}>Priority</label>
+          <select
+            name="priority"
+            value={formData.priority}
+            onChange={handleChange}
+            style={styles.input}
+            disabled={isLoading}
+          >
+            <option value="low">🟢 Low</option>
+            <option value="medium">🟡 Medium</option>
+            <option value="high">🔴 High</option>
+          </select>
+        </div>
 
-          {/* Description */}
-          <div style={styles.field}>
-            <label style={styles.label}>Description</label>
-            <textarea
-              name="description"
-              value={formData.description}
-              onChange={handleChange}
-              placeholder="What is this task about?"
-              style={{ ...styles.input, height: 80, resize: "none" }}
-              disabled={isLoading}
-            />
-          </div>
+        {/* Status */}
+        <div style={styles.field}>
+          <label style={styles.label}>Status</label>
+          <select
+            name="status"
+            value={formData.status}
+            onChange={handleChange}
+            style={styles.input}
+            disabled={isLoading}
+          >
+            <option value="todo">📋 Todo</option>
+            <option value="in-progress">⚙️ In Progress</option>
+            <option value="done">✅ Done</option>
+          </select>
+        </div>
 
-          {/* Priority */}
-          <div style={styles.field}>
-            <label style={styles.label}>Priority</label>
-            <select
-              name="priority"
-              value={formData.priority}
-              onChange={handleChange}
-              style={styles.input}
-              disabled={isLoading}
-            >
-              <option value="low">🟢 Low</option>
-              <option value="medium">🟡 Medium</option>
-              <option value="high">🔴 High</option>
-            </select>
-          </div>
+        {/* Dropdown */}
+        <div style={styles.field}>
+          <label style={styles.label}>Category</label>
+          <select
+            name="category"
+            value={formData.category}
+            onChange={handleChange}
+            style={styles.input}
+            disabled={isLoading}
+          >
+            <option value="">No Category</option>
+            {categories.map((cat) => (
+              <option key={cat._id} value={cat._id}>
+                {cat.name}
+              </option>
+            ))}
+          </select>
+        </div>
 
-          {/* Status */}
-          <div style={styles.field}>
-            <label style={styles.label}>Status</label>
-            <select
-              name="status"
-              value={formData.status}
-              onChange={handleChange}
-              style={styles.input}
-              disabled={isLoading}
-            >
-              <option value="todo">📋 Todo</option>
-              <option value="in-progress">⚙️ In Progress</option>
-              <option value="done">✅ Done</option>
-            </select>
-          </div>
-
-          {/* Buttons */}
-          <div style={styles.buttons}>
-            <button
-              type="button"
-              onClick={onClose}
-              style={styles.cancelBtn}
-              disabled={isLoading}
-            >
-              Cancel
-            </button>
-            <button
-              type="submit"
-              disabled={isLoading}
-              style={{
-                ...styles.createBtn,
-                opacity: isLoading ? 0.7 : 1,
-                cursor: isLoading ? "not-allowed" : "pointer",
-              }}
-            >
-              {isLoading ? "Creating..." : "Create →"}
-            </button>
-          </div>
-
-        </form>
-      </div>
+        {/* Buttons */}
+        <div style={styles.buttons}>
+          <button
+            type="button"
+            onClick={onClose}
+            style={styles.cancelBtn}
+            disabled={isLoading}
+          >
+            Cancel
+          </button>
+          <button
+            type="submit"
+            disabled={isLoading}
+            style={{
+              ...styles.createBtn,
+              opacity: isLoading ? 0.7 : 1,
+              cursor: isLoading ? "not-allowed" : "pointer",
+            }}
+          >
+            {isLoading ? "Creating..." : "Create →"}
+          </button>
+        </div>
+      </form>
     </div>
-  )
+  </div>
+);
 }
 
 const styles = {
