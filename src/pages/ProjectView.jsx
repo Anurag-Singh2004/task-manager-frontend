@@ -23,6 +23,7 @@ function ProjectView() {
   const [isMemberModalOpen, setIsMemberModalOpen] = useState(false);
   const [categories, setCategories] = useState([]);
   const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
+  const [categoryFilter, setCategoryFilter] = useState("all");
 
   useEffect(() => {
     async function fetchData() {
@@ -78,7 +79,9 @@ function ProjectView() {
       priorityFilter === "all" || task.priority === priorityFilter;
     const matchesStatus =
       statusFilter == "all" || task.status === statusFilter;
-    return matchesSearch && matchesPriority && matchesStatus;
+    const matchesCategory =
+      categoryFilter === "all" || task.category?._id === categoryFilter;
+    return matchesSearch && matchesPriority && matchesStatus && matchesCategory;
   });
 
   const todoTasks = filteredTasks.filter((task) => task.status === "todo");
@@ -115,7 +118,7 @@ function ProjectView() {
             onClick={() => setIsCategoryModalOpen(true)}
             style={styles.categoryBtn}
           >
-          +  Categories
+            + Categories
           </button>
         </div>
       </div>
@@ -152,6 +155,20 @@ function ProjectView() {
           <option value="todo">📋 Todo</option>
           <option value="in-progress">⚙️ In Progress</option>
           <option value="done">✅ Done</option>
+        </select>
+
+        {/* Category Fileter */}
+        <select
+          value={categoryFilter}
+          onChange={(e) => setCategoryFilter(e.target.value)}
+          style={styles.select}
+        >
+          <option value="all">All Categories</option>
+          {categories.map((cat) => (
+            <option key={cat._id} value={cat._id}>
+              {cat.name}
+            </option>
+          ))}
         </select>
       </div>
 
