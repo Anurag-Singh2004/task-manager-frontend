@@ -29,5 +29,5 @@ const styles = {
     fontSize: 15,
   },
 };
-
+{/********* */}
 export default Spinner;
