@@ -17,7 +17,7 @@ function ProtectedRoute({children}){
           fontSize: 18,
         }}
       >
-        ⏳ Restoring session...
+        <Spinner message="Loading..." />
       </div>
     );
   }
