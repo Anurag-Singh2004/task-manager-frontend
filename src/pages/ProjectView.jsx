@@ -7,6 +7,7 @@ import {useAuth} from "../context/AuthContext";
 import AddMemberModal from "../components/Projects/AddMemberModal";
 import CategoryModal from "../components/Projects/CategoryModal";
 import Spinner from "../components/UI/Spinner";
+import ErrorMessage from "../components/UI/ErrorMessage";
 
 function ProjectView() {
   const { id } = useParams();
@@ -69,7 +70,10 @@ function ProjectView() {
 
   if (isLoading)
     return <Spinner message="Loading project..." />;
-  if (error) return <p style={{ color: "#fca5a5", padding: 32 }}>❌ {error}</p>;
+  if (error)
+    return (
+      <ErrorMessage message={error} onRetry={() => window.location.reload()} />
+    );
 
 
   const filteredTasks = tasks.filter((task) => {

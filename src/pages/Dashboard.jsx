@@ -4,6 +4,7 @@ import api from "../utils/api";
 import ProjectCard from "../components/Projects/ProjectCard";
 import CreateProjectModal from "../components/Projects/CreateProjectModal";
 import Spinner from "../components/UI/Spinner";
+import ErrorMessage from "../components/UI/ErrorMessage";
 
 function Dashboard() {
   const { currentUser, logout } = useAuth();
@@ -58,7 +59,12 @@ function Dashboard() {
 
         {isLoading && <Spinner message="Loading projects..." />}
 
-        {error && <p style={styles.errorMsg}>❌ {error}</p>}
+        {error && (
+          <ErrorMessage
+            message={error}
+            onRetry={() => window.location.reload()}
+          />
+        )}
 
         {!isLoading && !error && projects.length === 0 && (
           <p style={styles.empty}>No projects yet! Create your first one. 🚀</p>
