@@ -3,21 +3,24 @@ import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 
 function Login() {
-  // ── State ──────────────────────────────────────────────
   const [formData, setFormData] = useState({
     email: "",
     password: "",
   });
-  const [error, setError] = useState("");
+  const [error, setError] = useState(() => {
+    const expired = localStorage.getItem("sessionExpired");
+    if (expired) {
+      localStorage.removeItem("sessionExpired");
+      return "Session expired! Please login again. 🔒";
+    }
+    return "";
+  });
   const [isLoading, setIsLoading] = useState(false);
 
-  // ── Hooks ──────────────────────────────────────────────
   const { login } = useAuth();
   const navigate = useNavigate();
 
-  // ── Handlers ───────────────────────────────────────────
   function handleChange(e) {
-    // ← fixed camelCase
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
     setError("");
@@ -47,7 +50,6 @@ function Login() {
     }
   }
 
-  // ── UI ─────────────────────────────────────────────────
   return (
     <div style={styles.page}>
       <div style={styles.card}>

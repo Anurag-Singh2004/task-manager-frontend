@@ -63,6 +63,7 @@ api.interceptors.response.use(
         // Refresh failed → force logout
         tokenStore.clearToken();
         localStorage.removeItem("refreshToken");
+        localStorage.setItem('sessionExpired', 'true')
         window.location.href = "/login";
         return Promise.reject(refreshError);
       }
